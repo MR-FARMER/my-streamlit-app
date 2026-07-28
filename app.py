@@ -213,11 +213,26 @@ all_groups = [
     ("其他内置函数", group_other_builtins),
     ("模块导入", group_modules),
 ]
-def search_tools(keyword):
-    """搜索所有分组，返回结果列表，每个元素包含描述、方法、权重、组名"""
+# 所有分组名称列表（用于下拉选择框）
+group_names = ["全部"] + [name for name, _ in all_groups]
+
+
+def search_tools(keyword, group_filter="全部"):
+    """
+    根据关键词和组别过滤进行搜索
+    - keyword: 搜索关键词
+    - group_filter: 组名，如果为"全部"则搜索所有组
+    """
     search_chars = list(keyword.strip())
     results = []
+
+    # 如果选择的是"全部"，遍历所有组；否则只遍历选中的组
+    groups_to_search = all_groups if group_filter == "全部" else [(group_filter, dict(all_groups))]  # 注意这里需要找到对应的字典
+
+    # 更稳健的做法：遍历 all_groups，根据名称判断
     for group_name, group_dict in all_groups:
+        if group_filter != "全部" and group_name != group_filter:
+            continue
         for desc, func in group_dict.items():
             weight = 0
             for ch in search_chars:
@@ -225,7 +240,7 @@ def search_tools(keyword):
                     weight += 1
             if weight > 0:
                 results.append((desc, func, weight, group_name))
-    # 按权重从高到低排序
+
     results.sort(key=lambda x: x[2], reverse=True)
     return results
 
@@ -234,32 +249,41 @@ def search_tools(keyword):
 st.title("🔍 Python 工具搜索引擎")
 st.write("根据输入的关键词（逐字符匹配），返回最相关的 Python 内置方法。")
 
-# 用户输入
-keyword = st.text_input("请输入你想搜索的关键词：", placeholder="例如：大写、文件、排序...")
+# 使用两列布局：第一列搜索框，第二列类别选择
+col1, col2 = st.columns([3, 1])  # 搜索框占 3 份宽度，选择框占 1 份
+
+with col1:
+    keyword = st.text_input("请输入你想搜索的关键词：", placeholder="例如：大写、文件、排序...",
+                            label_visibility="collapsed")
+
+with col2:
+    selected_group = st.selectbox("选择类别", group_names, index=0)
 
 # 搜索按钮
 if st.button("🚀 搜索"):
     if keyword.strip():
         with st.spinner("正在匹配中..."):
-            results = search_tools(keyword)
+            results = search_tools(keyword, selected_group)
 
         # 显示匹配数量
         st.success(f"✅ 共匹配到 **{len(results)}** 个相关工具")
         st.write(f"关键词拆分为 {len(list(keyword.strip()))} 个字符：`{list(keyword.strip())}`")
+        if selected_group != "全部":
+            st.write(f"🔍 当前筛选组别：`{selected_group}`")
         st.divider()
 
-    if results:
-        for idx, (desc, func, weight, group) in enumerate(results, start=1):
-            if weight >= 3:
-                emoji = "⭐"
-            elif weight >= 2:
-                emoji = "🔹"
-            else:
-                emoji = "▫️"
-            st.write(f"{emoji} **{idx}. 权重 {weight}**  [组别：`{group}`]")
-            st.write(f"   - 描述：{desc}")
-            st.write(f"   - 方法：`{func}`")
-            st.divider()
+        if results:
+            for idx, (desc, func, weight, group) in enumerate(results, start=1):
+                if weight >= 3:
+                    emoji = "⭐"
+                elif weight >= 2:
+                    emoji = "🔹"
+                else:
+                    emoji = "▫️"
+                st.write(f"{emoji} **{idx}. 权重 {weight}**  [组别：`{group}`]")
+                st.write(f"   - 描述：{desc}")
+                st.write(f"   - 方法：`{func}`")
+                st.divider()
         else:
             st.warning("❌ 没有找到任何匹配的工具，请尝试其他关键词。")
     else:
