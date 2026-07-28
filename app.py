@@ -247,6 +247,11 @@ def search_tools(keyword, group_filter="全部"):
 
 # ========== 网页界面 ==========
 # 使用两列布局，增加第一列宽度占比，确保不会换行
+st.title("🔍 Python 工具搜索引擎")
+st.write("根据输入的关键词（逐字符匹配），返回最相关的 Python 内置方法。")
+
+# 用户输入
+keyword = st.text_input("请输入你想搜索的关键词：", placeholder="例如：大写、文件、排序...")
 col1, col2 = st.columns([4, 1], gap="small")
 
 with col1:
