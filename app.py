@@ -246,18 +246,26 @@ def search_tools(keyword, group_filter="全部"):
 
 
 # ========== 网页界面 ==========
-st.title("🔍 Python 工具搜索引擎")
-st.write("根据输入的关键词（逐字符匹配），返回最相关的 Python 内置方法。")
-
-# 使用两列布局：第一列搜索框，第二列类别选择
-col1, col2 = st.columns([3, 1])  # 搜索框占 3 份宽度，选择框占 1 份
+# 使用两列布局，增加第一列宽度占比，确保不会换行
+col1, col2 = st.columns([4, 1], gap="small")
 
 with col1:
-    keyword = st.text_input("请输入你想搜索的关键词：", placeholder="例如：大写、文件、排序...",
-                            label_visibility="collapsed")
+    # 隐藏 label，只保留占位符
+    keyword = st.text_input(
+        "搜索关键词",  # 这个 label 会被隐藏，但为了可访问性保留
+        placeholder="例如：大写、文件、排序...",
+        label_visibility="collapsed"
+    )
 
 with col2:
-    selected_group = st.selectbox("选择类别", group_names, index=0)
+    # 同样隐藏下拉框的 label
+    selected_group = st.selectbox(
+        "选择类别",
+        group_names,
+        index=0,
+        label_visibility="collapsed"
+    )
+
 
 # 搜索按钮
 if st.button("🚀 搜索"):
