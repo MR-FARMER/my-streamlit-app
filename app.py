@@ -271,7 +271,6 @@ def search_tools(keyword, group_filter="全部"):
 # ========== 网页界面 ==========
 st.title("🔍 Python 工具搜索引擎")
 st.write("根据输入的关键词（逐字符匹配），返回最相关的 Python 内置方法。")
-st.write("当前分组列表：", [name for name, _ in all_groups])
 # 使用两列布局：左侧搜索框，右侧类别选择
 col1, col2 = st.columns([4, 1], gap="small")
 
