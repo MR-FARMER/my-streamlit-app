@@ -234,7 +234,7 @@ all_groups = [
     ("对象与反射", group_object_reflection),
     ("其他内置函数", group_other_builtins),
     ("模块导入", group_modules), 
-    ("语法与关键字", group_syntax)，
+    ("语法与关键字", group_syntax),
 ]
 # 所有分组名称列表（用于下拉选择框）
 group_names = ["全部"] + [name for name, _ in all_groups]
